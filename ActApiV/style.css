@@ -1,0 +1,14 @@
+a:link {
+    color: green;
+    background-color: transparent;
+    text-decoration: none;
+  }
+
+.local1{
+    background-color: wheat;
+}
+
+.local2{
+    border-radius: 15px;
+    background-color: aqua;
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Prueba</div>
+        <ul class="nav-menu">
+            <li><a href="#" onclick="cambiarVista('inicio')">Inicio</a></li>
+            <li><a href="#" onclick="cambiarVista('alumnos')">Alumnos</a></li>
+            <li><a href="#" onclick="cambiarVista('registrar')">Registrar</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Vista de Inicio -->
+        <div id="vista-inicio" class="vista">
+            <h2>Bienvenido</h2>
+            <p>Seleccione una opción</p>
+        </div>
+
+        <!-- Vista de Lista de Alumnos -->
+        <div id="vista-alumnos" class="vista" style="display: none;">
+            <h2>Lista de Alumnos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Carrera</th>
+                        <th>Edad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="alumnosTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Vista de Formulario -->
+        <div id="vista-registrar" class="vista" style="display: none;">
+            <h2>Registrar/Editar Alumno</h2>
+            <form id="alumnoForm">
+                <input type="hidden" id="alumnoId">
+                <div class="form-group">
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="carrera">Carrera</label>
+                    <input type="text" id="carrera" required>
+                </div>
+                <div class="form-group">
+                    <label for="edad">Edad</label>
+                    <input type="number" id="edad" required>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn">Guardar</button>
+                    <button type="button" class="btn" onclick="resetForm()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para cambiar entre vistas
+        function cambiarVista(vista) {
+            document.querySelectorAll('.vista').forEach(el => el.style.display = 'none');
+            document.getElementById('vista-' + vista).style.display = 'block';
+            
+            if (vista === 'alumnos') {
+                getAlumnos();
+            }
+        }
+
+        // Obtener todos los alumnos
+        function getAlumnos() {
+            fetch('http://localhost:5000/alumnos')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('alumnosTableBody');
+                    tableBody.innerHTML = '';
+                    data.forEach(alumno => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${alumno.id}</td>
+                                <td>${alumno.name}</td>
+                                <td>${alumno.edad}</td>
+                                <td>${alumno.carrera}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Cargar alumno para editar
+        function editarAlumno(id) {
+            fetch(`http://localhost:5000/alumnos/${id}`)
+                .then(response => response.json())
+                .then(alumno => {
+                    document.getElementById('alumnoId').value = alumno.id;
+                    document.getElementById('name').value = alumno.name;
+                    document.getElementById('carrera').value = alumno.carrera;
+                    document.getElementById('edad').value = alumno.edad;
+                    cambiarVista('registrar');
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Eliminar alumno
+        function eliminarAlumno(id) {
+            if (confirm('¿Está seguro de eliminar este alumno?')) {
+                fetch(`http://localhost:5000/alumnos/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(() => {
+                    getAlumnos();
+                    alert('Alumno eliminado con éxito');
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Resetear formulario
+        function resetForm() {
+            document.getElementById('alumnoForm').reset();
+            document.getElementById('alumnoId').value = '';
+            cambiarVista('alumnos');
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('alumnoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const alumnoId = document.getElementById('alumnoId').value;
+            const alumnoData = {
+                name: document.getElementById('name').value,
+                carrera: document.getElementById('carrera').value,
+                edad: parseInt(document.getElementById('edad').value)
+            };
+
+            const url = alumnoId ? 
+                `http://localhost:5000/alumnos/${alumnoId}` : 
+                'http://localhost:5000/alumnos';
+            
+            const method = alumnoId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(alumnoData)
+            })
+            .then(response => response.json())
+            .then(() => {
+                cambiarVista('alumnos');
+                resetForm();
+                alert(alumnoId ? 'Alumno actualizado con éxito' : 'Alumno creado con éxito');
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Mostrar vista inicial
+        cambiarVista('inicio');
+    </script>
+</body>
+</html>
