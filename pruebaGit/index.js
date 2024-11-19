@@ -12,14 +12,14 @@ const port = 3030;
 app.use(express.json());
 
 //Creacion de las rutas
-/*
+
 app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'index.html'));
 });
-*/
+
 
 //Datos en memoria (temporal)
-let usuarios = [];
+let usuarios = [{id:3,nombre:"Rafael",email:"test123@gmial.com"},{id:2,nombre:"Rafael",email:"test123@gmial.com"}];
 
 //Crear ruta POST
 app.post('/usuarios', (req, res)=> {
