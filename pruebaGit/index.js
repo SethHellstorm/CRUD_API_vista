@@ -12,14 +12,14 @@ const port = 3030;
 app.use(express.json());
 
 //Creacion de las rutas
-/*
 app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'index.html'));
 });
-*/
 
 //Datos en memoria (temporal)
-let usuarios = [];
+let usuarios = [{id:1,nombre:"Rafael",email:"test@gmail.com"},
+    {id:2,nombre:"Rafael",email:"test@gmail.com"}
+];
 
 //Crear ruta POST
 app.post('/usuarios', (req, res)=> {
@@ -36,9 +36,9 @@ app.get('/usuarios',(req,res)=>{
     res.json(usuarios)
 })
 
-//Ruta para obtener un usuario ID 
-app.get('/usuarios/:id', (req,res)=>{
-    const usuario = usuarios.find(u => u.id == req.params.id);
+//Ruta para obtener un usuario email
+app.get('/usuarios/:email', (req,res)=>{
+    const usuario = usuarios.filter(u => u.email == req.params.email);
     //Validar objeto
     if (usuario){
         //Mostrar
@@ -62,8 +62,8 @@ app.put('/usuarios/:id', (req,res)=>{
 })
 
 //Ruta para eliminar un usuario
-app.delete('/usuarios/:id', (req,res)=>{
-    const index = usuarios.findIndex(u => u.id== req.params.id);
+app.delete('/usuarios/:email', (req,res)=>{
+    const index = usuarios.findIndex(u => u.email== req.params.email);
     if (index !== -1){
         const usuarioEliminado = usuarios.splice(index,1);
         res.json({mensaje:'Usuario eliminado', usuario: usuarioEliminado})
@@ -74,5 +74,5 @@ app.delete('/usuarios/:id', (req,res)=>{
 
 //Iniciar el servidor
 app.listen(port,()=>{
-    console.log(`Hi bitch http://localhost:${port}`)
+    console.log(`http://localhost:${port}`)
 })

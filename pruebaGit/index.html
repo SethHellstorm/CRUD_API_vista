@@ -4,9 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Node</title>
+    <script src="index.js"></script>
 </head>
 <body>
-    <h1>Renderizando una HTML</h1>
-    <h2>Con nodemon</h2>
+    <h1>Buscar</h1>
+    <div class="mb-3">
+        <label for="id_alumno" class="form-label">ID del alumno:</label>
+        <input type="number" class="form-control" id="id_alumno">                  
+    </div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+            </tr>
+        </thead>
+        <tbody id="item-table-body"></tbody>
+    </table>
 </body>
 </html>
